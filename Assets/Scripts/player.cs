@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,10 @@ public class player : MonoBehaviour
    public GameObject bulletimpact;
    public float closerange;
    public float gunRange;
+   public float gravityModifier = 10f;
+    public float jumpHeight = 10f;
+    Vector3 yvelocity;
+
    
 
     // Start is called before the first frame update
@@ -25,6 +30,15 @@ public class player : MonoBehaviour
         playermovement();
         mouseMovement();
         bulletShooting();
+        jump();
+        crouch();
+        Sprint();
+
+        //health update
+        //score update
+        //reloading
+        
+
 
 
 
@@ -32,6 +46,28 @@ public class player : MonoBehaviour
 
 
 
+    }
+
+    private void Sprint()
+    {
+        
+    }
+
+    private void crouch()
+    {
+        
+    }
+
+    private void jump()
+    {
+
+        // only allowed to jump if we are grounded and press spacebar
+        if(Input.GetButtonDown("Jump") && mycc.isGrounded)
+        {
+            yvelocity.y = jumpHeight;//yvelocity is being subtrated in playeer movement to create effect of gravity
+            mycc.Move(yvelocity);
+        }
+        
     }
 
     private void bulletShooting()
@@ -77,7 +113,7 @@ public class player : MonoBehaviour
 
         cameraVerticalMovement += ymovement;
 
-        cameraVerticalMovement = Mathf.Clamp(cameraVerticalMovement,-50f, 50f);
+        cameraVerticalMovement = Mathf.Clamp(cameraVerticalMovement,-80f, 80f);
 
         myCameraHead.localRotation = (Quaternion.Euler(cameraVerticalMovement, 0,0)); //rotating  up and down camera head
 
@@ -105,9 +141,17 @@ public class player : MonoBehaviour
         //Vector3 yvelocity = mycc.velocity + Physics.gravity;
 
         //seperating the y vector/velociity and only making the addition in that
-        movement.y += mycc.velocity.y + Physics.gravity.y * Time.deltaTime;
+        yvelocity.y += mycc.velocity.y + Physics.gravity.y * gravityModifier;
 
-        mycc.Move(movement);
+        if (mycc.isGrounded)
+        {
+            yvelocity.y = Physics.gravity.y * Time.deltaTime;
+            // in our y vector = -1 * 0.016 = -0.016
+
+        }
+        mycc.Move(yvelocity);
+        
+
     }
     
     
